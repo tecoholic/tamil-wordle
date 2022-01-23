@@ -3,6 +3,7 @@ import { set as dbset, get as dbget } from "lockr";
 import InputBoxes from "./InputBoxes";
 import axios from "axios";
 import HistoryBoxes from "./HistoryBoxes";
+import verifier from "./verifier";
 
 const historykey = new Date().toDateString().replace(/ /g, "-");
 
@@ -24,9 +25,21 @@ function Workbench({
       return;
     }
     // call the API only when all the boxes are full
+    let results = verifier(letters);
+    setGuesses([...guesses, { letters, results }]);
+    let wrongLetters = letters.filter(
+      (l, i) => results[i] === "LETTER_NOT_FOUND"
+    );
+    onVerified({ wrongLetters });
+
+    /*
     axios
-      .post("https://tamilwordle-maleycpqdq-el.a.run.app/verify-word", letters)
+      .post(
+        "https://tamilwordle-maleycpqdq-el.a.run.app/verify-word-with-uyirmei",
+        letters
+      )
       .then((res) => {
+        console.log(res.data);
         let results = res.data;
         if (res.status === 202) {
           results = Array(length).fill("LETTER_MATCHED");
@@ -44,6 +57,7 @@ function Workbench({
         console.log(e);
         alert("Error");
       });
+      */
   };
 
   // reset red border when user starts to type again
